@@ -256,55 +256,56 @@ function downsamplePerMinute(history, getUsed) {
 function renderCharts(history) {
   if (!history || history.length === 0) return;
 
-  // Extract used credits from history records
   const getUsed = (h) => h.usage?.data?.usage?.items?.[0]?.used || 0;
-
-  // Smooth trend chart data (gap threshold: 60s, normal interval is 10s)
   const gapThreshold = 60 * 1000;
-  // Downsample to 1 point per minute before smoothing
   const trend = smoothHistory(history, getUsed, gapThreshold);
-  const trendLabels = trend.labels;
-  const trendData = trend.data;
 
-  if (trendChart) trendChart.destroy();
-  trendChart = new Chart(document.getElementById('trendChart'), {
-    type: 'line',
-    data: {
-      labels: trendLabels,
-      datasets: [{
-        label: '累计使用 Credits',
-        data: trendData,
-        borderColor: '#4361ee',
-        backgroundColor: 'rgba(67,97,238,.08)',
-        fill: true,
-        tension: 0.3,
-        borderWidth: 2.5,
-        pointRadius: 0,
-        pointHoverRadius: 5,
-        pointHoverBackgroundColor: '#4361ee',
-        pointHoverBorderColor: '#fff',
-        pointHoverBorderWidth: 2,
-      }]
-    },
-    options: {
-      responsive: true,
-      interaction: { mode: 'index', intersect: false },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: ctx => '已使用: ' + fmtFull(ctx.parsed.y)
-          }
-        }
+  // --- Trend chart: update in place ---
+  if (trendChart) {
+    trendChart.data.labels = trend.labels;
+    trendChart.data.datasets[0].data = trend.data;
+    trendChart.update('none'); // no animation
+  } else {
+    trendChart = new Chart(document.getElementById('trendChart'), {
+      type: 'line',
+      data: {
+        labels: trend.labels,
+        datasets: [{
+          label: '累计使用 Credits',
+          data: trend.data,
+          borderColor: '#4361ee',
+          backgroundColor: 'rgba(67,97,238,.08)',
+          fill: true,
+          tension: 0.3,
+          borderWidth: 2.5,
+          pointRadius: 0,
+          pointHoverRadius: 5,
+          pointHoverBackgroundColor: '#4361ee',
+          pointHoverBorderColor: '#fff',
+          pointHoverBorderWidth: 2,
+        }]
       },
-      scales: {
-        x: { ticks: { maxTicksLimit: 10, font: { size: 11 } } },
-        y: { ticks: { callback: v => fmt(v), font: { size: 11 } } }
+      options: {
+        responsive: true,
+        animation: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: ctx => '已使用: ' + fmtFull(ctx.parsed.y)
+            }
+          }
+        },
+        scales: {
+          x: { ticks: { maxTicksLimit: 10, font: { size: 11 } } },
+          y: { ticks: { callback: v => fmt(v), font: { size: 11 } } }
+        }
       }
-    }
-  });
+    });
+  }
 
-  // Daily consumption chart — distribute gap usage across days
+  // --- Daily chart: update in place ---
   const dailyMap = {};
   for (let i = 1; i < history.length; i++) {
     const prevUsed = getUsed(history[i-1]);
@@ -313,7 +314,6 @@ function renderCharts(history) {
     const gap = history[i].ts - history[i-1].ts;
     const dayMs = 24 * 60 * 60 * 1000;
     if (gap > gapThreshold && diff > 0) {
-      // Spread usage evenly across the gap days
       const days = Math.max(1, Math.round(gap / dayMs));
       const perDay = diff / days;
       const start = new Date(history[i-1].ts);
@@ -330,27 +330,33 @@ function renderCharts(history) {
   const dailyLabels = Object.keys(dailyMap);
   const dailyData = Object.values(dailyMap);
 
-  if (dailyChart) dailyChart.destroy();
-  dailyChart = new Chart(document.getElementById('dailyChart'), {
-    type: 'bar',
-    data: {
-      labels: dailyLabels,
-      datasets: [{
-        label: '每日消耗',
-        data: dailyData,
-        backgroundColor: 'rgba(247,37,133,.7)',
-        borderRadius: 4,
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { ticks: { font: { size: 11 } } },
-        y: { ticks: { callback: v => fmt(v), font: { size: 11 } } }
+  if (dailyChart) {
+    dailyChart.data.labels = dailyLabels;
+    dailyChart.data.datasets[0].data = dailyData;
+    dailyChart.update('none');
+  } else {
+    dailyChart = new Chart(document.getElementById('dailyChart'), {
+      type: 'bar',
+      data: {
+        labels: dailyLabels,
+        datasets: [{
+          label: '每日消耗',
+          data: dailyData,
+          backgroundColor: 'rgba(247,37,133,.7)',
+          borderRadius: 4,
+        }]
+      },
+      options: {
+        responsive: true,
+        animation: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { font: { size: 11 } } },
+          y: { ticks: { callback: v => fmt(v), font: { size: 11 } } }
+        }
       }
-    }
-  });
+    });
+  }
 
   // Estimate remaining days from daily rate
   if (dailyData.length > 0) {
