@@ -14,6 +14,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .header .status{display:flex;align-items:center;gap:8px;font-size:13px;opacity:.8}
 .header .dot{width:8px;height:8px;border-radius:50%;background:var(--success);animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.refresh-btn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:6px 14px;border-radius:8px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .2s}
+.refresh-btn:hover{background:rgba(255,255,255,.25)}
+.refresh-btn:disabled{opacity:.5;cursor:not-allowed}
+.refresh-btn .spin{animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 .container{max-width:1200px;margin:0 auto;padding:24px}
 .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
 .card{background:var(--card);border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
@@ -47,6 +52,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 <div class="header">
   <h1>MiMo Token 用量监控</h1>
   <div class="status">
+    <button class="refresh-btn" id="refreshBtn" onclick="manualRefresh()">
+      <span id="refreshIcon">&#x21bb;</span> 刷新
+    </button>
     <span class="dot" id="statusDot"></span>
     <span id="statusText">连接中...</span>
   </div>
@@ -343,6 +351,20 @@ async function saveCookies() {
 fetchUsage();
 fetchHistory();
 setInterval(() => { fetchUsage(); fetchHistory(); }, 60000);
+
+async function manualRefresh() {
+  const btn = document.getElementById('refreshBtn');
+  const icon = document.getElementById('refreshIcon');
+  btn.disabled = true;
+  icon.classList.add('spin');
+  try {
+    await fetch('/api/refresh');
+    await fetchUsage();
+    await fetchHistory();
+  } catch {}
+  btn.disabled = false;
+  icon.classList.remove('spin');
+}
 </script>
 </body>
 </html>
