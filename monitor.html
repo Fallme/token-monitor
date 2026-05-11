@@ -32,6 +32,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .charts{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
 .chart-box{background:var(--card);border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
 .chart-box h3{font-size:15px;margin-bottom:16px;color:var(--text)}
+.chart-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.chart-header h3{margin-bottom:0}
+.toggle-group{display:flex;background:#e9ecef;border-radius:8px;padding:2px}
+.toggle-btn{padding:4px 12px;border:none;border-radius:6px;font-size:12px;cursor:pointer;background:transparent;color:var(--sub);transition:all .2s}
+.toggle-btn.active{background:#fff;color:var(--text);box-shadow:0 1px 2px rgba(0,0,0,.1)}
 .progress-wrap{background:var(--card);border-radius:12px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,.08);margin-bottom:24px}
 .progress-wrap h3{font-size:15px;margin-bottom:12px}
 .progress-bar{height:28px;background:#e9ecef;border-radius:14px;overflow:hidden;position:relative}
@@ -60,7 +65,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
   .card.expire .value{font-size:16px}
   .charts{grid-template-columns:1fr;gap:10px}
   .chart-box{padding:12px}
-  .chart-box h3{font-size:13px;margin-bottom:10px}
+  .chart-header{margin-bottom:10px}
+  .chart-header h3{font-size:13px}
+  .toggle-btn{padding:3px 8px;font-size:11px}
   .progress-wrap{padding:12px}
   .progress-wrap h3{font-size:13px}
   .progress-bar{height:22px}
@@ -117,7 +124,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 
   <div class="charts">
     <div class="chart-box">
-      <h3>用量趋势（最近数据点）</h3>
+      <div class="chart-header">
+        <h3>用量趋势</h3>
+        <div class="toggle-group">
+          <button class="toggle-btn active" onclick="setTrendMode('total')" id="trendBtnTotal">总量</button>
+          <button class="toggle-btn" onclick="setTrendMode('rate')" id="trendBtnRate">每分钟</button>
+        </div>
+      </div>
       <canvas id="trendChart"></canvas>
     </div>
     <div class="chart-box">
@@ -138,6 +151,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 
 <script>
 let trendChart, dailyChart;
+let trendMode = 'total'; // 'total' or 'rate'
+let lastTrendData = null;
 
 function fmt(n) {
   if (n == null) return '--';
@@ -256,19 +271,37 @@ function renderCharts(history) {
   const gapThreshold = 60 * 1000;
   const trend = smoothHistory(history, getUsed, gapThreshold);
 
+  // Compute per-minute rate from smoothed data
+  const rateData = [];
+  for (let i = 0; i < trend.data.length; i++) {
+    if (i === 0) { rateData.push(0); continue; }
+    const timeDiff = (trend.labels.length > i) ? gapThreshold : 60000;
+    // Parse time from labels to get actual time difference
+    const prev = trend.data[i - 1];
+    const curr = trend.data[i];
+    const diff = Math.max(0, curr - prev);
+    rateData.push(diff);
+  }
+
+  lastTrendData = { labels: trend.labels, total: trend.data, rate: rateData };
+
+  const activeData = trendMode === 'total' ? trend.data : rateData;
+  const activeLabel = trendMode === 'total' ? '累计使用 Credits' : '每分钟消耗';
+
   // --- Trend chart: update in place ---
   if (trendChart) {
     trendChart.data.labels = trend.labels;
-    trendChart.data.datasets[0].data = trend.data;
-    trendChart.update('none'); // no animation
+    trendChart.data.datasets[0].data = activeData;
+    trendChart.data.datasets[0].label = activeLabel;
+    trendChart.update('none');
   } else {
     trendChart = new Chart(document.getElementById('trendChart'), {
       type: 'line',
       data: {
         labels: trend.labels,
         datasets: [{
-          label: '累计使用 Credits',
-          data: trend.data,
+          label: activeLabel,
+          data: activeData,
           borderColor: '#4361ee',
           backgroundColor: 'rgba(67,97,238,.08)',
           fill: true,
@@ -289,7 +322,7 @@ function renderCharts(history) {
           legend: { display: false },
           tooltip: {
             callbacks: {
-              label: ctx => '已使用: ' + fmtFull(ctx.parsed.y)
+              label: ctx => (trendMode === 'total' ? '已使用: ' : '速率: ') + fmtFull(ctx.parsed.y)
             }
           }
         },
@@ -362,8 +395,19 @@ function renderCharts(history) {
       const lastLimit = history[history.length-1].usage?.data?.usage?.items?.[0]?.limit || 1600000000;
       const remain = lastLimit - lastUsed;
       const daysLeft = Math.ceil(remain / avgDaily);
-      setText('remainDays', '约 ' + daysLeft + ' 天');
+      setText('remainDays', '约可用 ' + daysLeft + ' 天');
     }
+  }
+}
+
+function setTrendMode(mode) {
+  trendMode = mode;
+  document.getElementById('trendBtnTotal').classList.toggle('active', mode === 'total');
+  document.getElementById('trendBtnRate').classList.toggle('active', mode === 'rate');
+  if (trendChart && lastTrendData) {
+    trendChart.data.datasets[0].data = mode === 'total' ? lastTrendData.total : lastTrendData.rate;
+    trendChart.data.datasets[0].label = mode === 'total' ? '累计使用 Credits' : '每分钟消耗';
+    trendChart.update('none');
   }
 }
 
