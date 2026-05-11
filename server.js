@@ -3,6 +3,7 @@ const https = require("https");
 const fs = require("fs");
 const path = require("path");
 const { URL } = require("url");
+const { exec } = require("child_process");
 
 const PORT = Number(process.env.PORT || 3001);
 const MIMO_BASE = "https://platform.xiaomimimo.com";
@@ -43,6 +44,21 @@ function saveHistory(history) {
   const cutoff = Date.now() - 90 * 24 * 60 * 60 * 1000;
   store.history = history.filter((h) => h.ts > cutoff);
   fs.writeFileSync(STORE_PATH, JSON.stringify(store, null, 2));
+}
+
+// --- Git sync ---
+let lastGitSync = 0;
+const GIT_SYNC_INTERVAL = 60 * 60 * 1000; // 1 hour
+
+function gitSync() {
+  if (Date.now() - lastGitSync < GIT_SYNC_INTERVAL) return;
+  if (!fs.existsSync(path.join(__dirname, ".git"))) return; // skip on Render
+  lastGitSync = Date.now();
+  const cwd = __dirname;
+  exec("git add store.json && git diff --cached --quiet || git commit -m 'chore: sync store data' && git push", { cwd }, (err, stdout, stderr) => {
+    if (err) console.error("[git] sync error:", stderr || err.message);
+    else if (stdout) console.log("[git] store.json synced");
+  });
 }
 
 // --- MiMo API fetch ---
@@ -105,6 +121,7 @@ async function pollUsage() {
     const history = loadHistory();
     history.push({ ts: now, detail: detail.body, usage: usage.body });
     saveHistory(history);
+    gitSync();
 
     // Extract summary
     const d = detail.body;

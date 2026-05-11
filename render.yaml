@@ -4,7 +4,7 @@ services:
     runtime: node
     plan: free
     buildCommand: npm install
-    startCommand: npm start
+    startCommand: git pull origin main 2>/dev/null; npm start
     envVars:
       - key: MIMO_CONSOLE_COOKIES
         sync: false
