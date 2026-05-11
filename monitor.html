@@ -271,15 +271,11 @@ function renderCharts(history) {
   const gapThreshold = 60 * 1000;
   const trend = smoothHistory(history, getUsed, gapThreshold);
 
-  // Compute per-minute rate from smoothed data
+  // Compute incremental usage between consecutive points
   const rateData = [];
   for (let i = 0; i < trend.data.length; i++) {
     if (i === 0) { rateData.push(0); continue; }
-    const timeDiff = (trend.labels.length > i) ? gapThreshold : 60000;
-    // Parse time from labels to get actual time difference
-    const prev = trend.data[i - 1];
-    const curr = trend.data[i];
-    const diff = Math.max(0, curr - prev);
+    const diff = Math.max(0, trend.data[i] - trend.data[i - 1]);
     rateData.push(diff);
   }
 
@@ -322,7 +318,7 @@ function renderCharts(history) {
           legend: { display: false },
           tooltip: {
             callbacks: {
-              label: ctx => (trendMode === 'total' ? '已使用: ' : '速率: ') + fmtFull(ctx.parsed.y)
+              label: ctx => (trendMode === 'total' ? '累计使用: ' : '本段消耗: ') + fmtFull(ctx.parsed.y)
             }
           }
         },
