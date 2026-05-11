@@ -208,10 +208,6 @@ function renderDetail(d) {
   document.getElementById('progressFill').style.width = Math.min(pct, 100) + '%';
   setText('progressText', pct.toFixed(1) + '% (' + fmtFull(used) + ' / ' + fmtFull(total) + ')');
 
-  // Estimate remaining days
-  if (used > 0 && total > used) {
-    setText('remainDays', '使用 ' + pct.toFixed(1) + '%');
-  }
 }
 
 // Smooth data across time gaps caused by service downtime
@@ -366,7 +362,7 @@ function renderCharts(history) {
       const lastLimit = history[history.length-1].usage?.data?.usage?.items?.[0]?.limit || 1600000000;
       const remain = lastLimit - lastUsed;
       const daysLeft = Math.ceil(remain / avgDaily);
-      setText('remainDays', '预计 ' + daysLeft + ' 天后耗尽 (日均 ' + fmt(avgDaily) + ')');
+      setText('remainDays', '约 ' + daysLeft + ' 天');
     }
   }
 }
