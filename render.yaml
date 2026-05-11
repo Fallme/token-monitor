@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: token-monitor
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: MIMO_CONSOLE_COOKIES
+        sync: false
