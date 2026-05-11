@@ -186,18 +186,46 @@ function renderDetail(d) {
   }
 }
 
+// Smooth data across time gaps caused by service downtime
+function smoothHistory(history, getUsed, gapThresholdMs) {
+  if (history.length < 2) return { labels: [], data: [] };
+  const labels = [];
+  const data = [];
+  for (let i = 0; i < history.length; i++) {
+    const d = new Date(history[i].ts);
+    labels.push(d.getMonth()+1 + '/' + d.getDate() + ' ' + d.getHours() + ':' + String(d.getMinutes()).padStart(2,'0'));
+    data.push(getUsed(history[i]));
+    if (i < history.length - 1) {
+      const gap = history[i+1].ts - history[i].ts;
+      if (gap > gapThresholdMs) {
+        // Interpolate intermediate points across the gap
+        const steps = Math.min(Math.ceil(gap / gapThresholdMs), 20);
+        const v0 = data[data.length - 1];
+        const v1 = getUsed(history[i+1]);
+        for (let s = 1; s < steps; s++) {
+          const t = s / steps;
+          const ts = history[i].ts + gap * t;
+          const id = new Date(ts);
+          labels.push(id.getMonth()+1 + '/' + id.getDate() + ' ' + id.getHours() + ':' + String(id.getMinutes()).padStart(2,'0'));
+          data.push(v0 + (v1 - v0) * t);
+        }
+      }
+    }
+  }
+  return { labels, data };
+}
+
 function renderCharts(history) {
   if (!history || history.length === 0) return;
 
   // Extract used credits from history records
   const getUsed = (h) => h.usage?.data?.usage?.items?.[0]?.used || 0;
 
-  // Trend chart - cumulative usage over time
-  const trendLabels = history.map(h => {
-    const d = new Date(h.ts);
-    return d.getMonth()+1 + '/' + d.getDate() + ' ' + d.getHours() + ':' + String(d.getMinutes()).padStart(2,'0');
-  });
-  const trendData = history.map(h => getUsed(h));
+  // Smooth trend chart data (gap threshold: 60s, normal interval is 10s)
+  const gapThreshold = 60 * 1000;
+  const trend = smoothHistory(history, getUsed, gapThreshold);
+  const trendLabels = trend.labels;
+  const trendData = trend.data;
 
   if (trendChart) trendChart.destroy();
   trendChart = new Chart(document.getElementById('trendChart'), {
@@ -224,14 +252,27 @@ function renderCharts(history) {
     }
   });
 
-  // Daily consumption chart
+  // Daily consumption chart — distribute gap usage across days
   const dailyMap = {};
   for (let i = 1; i < history.length; i++) {
     const prevUsed = getUsed(history[i-1]);
     const currUsed = getUsed(history[i]);
     const diff = Math.max(0, currUsed - prevUsed);
-    const day = new Date(history[i].ts).toLocaleDateString('zh-CN');
-    dailyMap[day] = (dailyMap[day] || 0) + diff;
+    const gap = history[i].ts - history[i-1].ts;
+    const dayMs = 24 * 60 * 60 * 1000;
+    if (gap > gapThreshold && diff > 0) {
+      // Spread usage evenly across the gap days
+      const days = Math.max(1, Math.round(gap / dayMs));
+      const perDay = diff / days;
+      const start = new Date(history[i-1].ts);
+      for (let d = 0; d < days; d++) {
+        const day = new Date(start.getTime() + d * dayMs).toLocaleDateString('zh-CN');
+        dailyMap[day] = (dailyMap[day] || 0) + perDay;
+      }
+    } else {
+      const day = new Date(history[i].ts).toLocaleDateString('zh-CN');
+      dailyMap[day] = (dailyMap[day] || 0) + diff;
+    }
   }
 
   const dailyLabels = Object.keys(dailyMap);
