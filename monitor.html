@@ -182,16 +182,16 @@ function renderDetail(d) {
   const usageInfo = d.usage?.data?.usage?.items?.[0] || {};
 
   // Plan name
-  document.getElementById('planName').textContent = info.planName || '--';
+  setText('planName', info.planName || '--');
 
   // Expiry
   const expiry = info.currentPeriodEnd;
   if (expiry) {
     const expDate = new Date(expiry.replace(' ', 'T'));
-    document.getElementById('planExpiry').textContent = '有效期至 ' + expiry;
-    document.getElementById('expireDate').textContent = expDate.toLocaleDateString('zh-CN');
+    setText('planExpiry', '有效期至 ' + expiry);
+    setText('expireDate', expDate.toLocaleDateString('zh-CN'));
     const daysLeft = Math.max(0, Math.ceil((expDate - Date.now()) / 86400000));
-    document.getElementById('expireCountdown').textContent = '剩余 ' + daysLeft + ' 天';
+    setText('expireCountdown', '剩余 ' + daysLeft + ' 天');
   }
 
   // Credits from usage API
@@ -200,20 +200,17 @@ function renderDetail(d) {
   const remain = total - used;
   const pct = total > 0 ? (used / total * 100) : 0;
 
-  document.getElementById('usedCredits').textContent = fmtFull(used);
-  document.getElementById('usedPercent').textContent = pct.toFixed(1) + '% 已使用';
-  document.getElementById('remainCredits').textContent = fmtFull(remain);
+  setText('usedCredits', fmtFull(used));
+  setText('usedPercent', pct.toFixed(1) + '% 已使用');
+  setText('remainCredits', fmtFull(remain));
 
   // Progress bar
   document.getElementById('progressFill').style.width = Math.min(pct, 100) + '%';
-  document.getElementById('progressText').textContent = pct.toFixed(1) + '% (' + fmtFull(used) + ' / ' + fmtFull(total) + ')';
+  setText('progressText', pct.toFixed(1) + '% (' + fmtFull(used) + ' / ' + fmtFull(total) + ')');
 
   // Estimate remaining days
   if (used > 0 && total > used) {
-    // Calculate daily usage rate from data
-    const remaining = total - used;
-    // We'll update this with chart data later
-    document.getElementById('remainDays').textContent = '使用 ' + pct.toFixed(1) + '%';
+    setText('remainDays', '使用 ' + pct.toFixed(1) + '%');
   }
 }
 
@@ -369,14 +366,19 @@ function renderCharts(history) {
       const lastLimit = history[history.length-1].usage?.data?.usage?.items?.[0]?.limit || 1600000000;
       const remain = lastLimit - lastUsed;
       const daysLeft = Math.ceil(remain / avgDaily);
-      document.getElementById('remainDays').textContent = '预计 ' + daysLeft + ' 天后耗尽 (日均 ' + fmt(avgDaily) + ')';
+      setText('remainDays', '预计 ' + daysLeft + ' 天后耗尽 (日均 ' + fmt(avgDaily) + ')');
     }
   }
 }
 
+function setText(id, text) {
+  const el = document.getElementById(id);
+  if (el.textContent !== text) el.textContent = text;
+}
+
 function setStatus(ok) {
   document.getElementById('statusDot').style.background = ok ? '#06d6a0' : '#ef476f';
-  document.getElementById('statusText').textContent = ok ? '已连接' : '未连接';
+  setText('statusText', ok ? '已连接' : '未连接');
 }
 
 function showError(msg) {
