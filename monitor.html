@@ -202,20 +202,19 @@ function smoothHistory(history, getUsed, gapThresholdMs) {
   for (let i = 0; i < history.length; i++) {
     const d = new Date(history[i].ts);
     labels.push(d.getMonth()+1 + '/' + d.getDate() + ' ' + d.getHours() + ':' + String(d.getMinutes()).padStart(2,'0'));
-    data.push(getUsed(history[i]));
+    data.push(Math.round(getUsed(history[i])));
     if (i < history.length - 1) {
       const gap = history[i+1].ts - history[i].ts;
       if (gap > gapThresholdMs) {
-        // Interpolate intermediate points across the gap
         const steps = Math.min(Math.ceil(gap / gapThresholdMs), 20);
         const v0 = data[data.length - 1];
-        const v1 = getUsed(history[i+1]);
+        const v1 = Math.round(getUsed(history[i+1]));
         for (let s = 1; s < steps; s++) {
           const t = s / steps;
           const ts = history[i].ts + gap * t;
           const id = new Date(ts);
           labels.push(id.getMonth()+1 + '/' + id.getDate() + ' ' + id.getHours() + ':' + String(id.getMinutes()).padStart(2,'0'));
-          data.push(v0 + (v1 - v0) * t);
+          data.push(Math.round(v0 + (v1 - v0) * t));
         }
       }
     }
