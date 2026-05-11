@@ -242,8 +242,7 @@ function renderCharts(history) {
   // Smooth trend chart data (gap threshold: 60s, normal interval is 10s)
   const gapThreshold = 60 * 1000;
   // Downsample to 1 point per minute before smoothing
-  const minuteHistory = downsamplePerMinute(history, getUsed);
-  const trend = smoothHistory(minuteHistory, getUsed, gapThreshold);
+  const trend = smoothHistory(history, getUsed, gapThreshold);
   const trendLabels = trend.labels;
   const trendData = trend.data;
 
@@ -258,17 +257,28 @@ function renderCharts(history) {
         borderColor: '#4361ee',
         backgroundColor: 'rgba(67,97,238,.08)',
         fill: true,
-        tension: 0.35,
-        borderWidth: 1.5,
+        tension: 0.3,
+        borderWidth: 2.5,
         pointRadius: 0,
-        pointHitRadius: 6,
+        pointHoverRadius: 5,
+        pointHoverBackgroundColor: '#4361ee',
+        pointHoverBorderColor: '#fff',
+        pointHoverBorderWidth: 2,
       }]
     },
     options: {
       responsive: true,
-      plugins: { legend: { display: false } },
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => '已使用: ' + fmtFull(ctx.parsed.y)
+          }
+        }
+      },
       scales: {
-        x: { ticks: { maxTicksLimit: 8, font: { size: 11 } } },
+        x: { ticks: { maxTicksLimit: 10, font: { size: 11 } } },
         y: { ticks: { callback: v => fmt(v), font: { size: 11 } } }
       }
     }
