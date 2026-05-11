@@ -223,6 +223,17 @@ function smoothHistory(history, getUsed, gapThresholdMs) {
   return { labels, data };
 }
 
+// Downsample: pick one point per minute (last value in each minute bucket)
+function downsamplePerMinute(history, getUsed) {
+  if (history.length === 0) return [];
+  const buckets = new Map();
+  for (const h of history) {
+    const key = Math.floor(h.ts / 60000) * 60000;
+    buckets.set(key, h);
+  }
+  return Array.from(buckets.values());
+}
+
 function renderCharts(history) {
   if (!history || history.length === 0) return;
 
@@ -231,7 +242,9 @@ function renderCharts(history) {
 
   // Smooth trend chart data (gap threshold: 60s, normal interval is 10s)
   const gapThreshold = 60 * 1000;
-  const trend = smoothHistory(history, getUsed, gapThreshold);
+  // Downsample to 1 point per minute before smoothing
+  const minuteHistory = downsamplePerMinute(history, getUsed);
+  const trend = smoothHistory(minuteHistory, getUsed, gapThreshold);
   const trendLabels = trend.labels;
   const trendData = trend.data;
 
@@ -244,10 +257,12 @@ function renderCharts(history) {
         label: '累计使用 Credits',
         data: trendData,
         borderColor: '#4361ee',
-        backgroundColor: 'rgba(67,97,238,.1)',
+        backgroundColor: 'rgba(67,97,238,.08)',
         fill: true,
-        tension: 0.3,
-        pointRadius: 3,
+        tension: 0.35,
+        borderWidth: 1.5,
+        pointRadius: 0,
+        pointHitRadius: 6,
       }]
     },
     options: {
