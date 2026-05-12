@@ -341,24 +341,21 @@ function renderCharts(history) {
     intervalMap[label] = (intervalMap[label] || 0) + diff;
   }
 
-  const dailyLabels = Object.keys(intervalMap);
-  const dailyData = Object.values(intervalMap);
-
-  const dailyLabels = Object.keys(dailyMap);
-  const dailyData = Object.values(dailyMap);
+  const intervalLabels = Object.keys(intervalMap);
+  const intervalData = Object.values(intervalMap);
 
   if (dailyChart) {
-    dailyChart.data.labels = dailyLabels;
-    dailyChart.data.datasets[0].data = dailyData;
+    dailyChart.data.labels = intervalLabels;
+    dailyChart.data.datasets[0].data = intervalData;
     dailyChart.update('none');
   } else {
     dailyChart = new Chart(document.getElementById('dailyChart'), {
       type: 'bar',
       data: {
-        labels: dailyLabels,
+        labels: intervalLabels,
         datasets: [{
           label: '每10分钟消耗',
-          data: dailyData,
+          data: intervalData,
           backgroundColor: 'rgba(247,37,133,.7)',
           borderRadius: 4,
         }]
@@ -376,8 +373,8 @@ function renderCharts(history) {
   }
 
   // Estimate remaining days from average rate
-  if (dailyData.length > 0) {
-    const avgPerInterval = dailyData.reduce((a, b) => a + b, 0) / dailyData.length;
+  if (intervalData.length > 0) {
+    const avgPerInterval = intervalData.reduce((a, b) => a + b, 0) / intervalData.length;
     const avgDaily = avgPerInterval * 144; // 144 x 10min = 1 day
     if (avgDaily > 0) {
       const lastUsed = getUsed(history[history.length-1]);
