@@ -125,7 +125,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
   <div class="charts">
     <div class="chart-box">
       <div class="chart-header">
-        <h3>10分钟用量走势</h3>
+        <h3>5分钟用量走势</h3>
         <div class="toggle-group">
           <button class="toggle-btn active" onclick="setTrendMode('total')" id="trendBtnTotal">总量</button>
           <button class="toggle-btn" onclick="setTrendMode('rate')" id="trendBtnRate">每10分钟</button>
@@ -237,7 +237,7 @@ function smoothHistory(history, getUsed, gapThresholdMs) {
     if (i < history.length - 1) {
       const gap = history[i+1].ts - history[i].ts;
       if (gap > gapThresholdMs) {
-        const steps = Math.min(Math.ceil(gap / gapThresholdMs), 20);
+        const steps = Math.min(Math.ceil(gap / gapThresholdMs), 50);
         const v0 = data[data.length - 1];
         const v1 = Math.round(getUsed(history[i+1]));
         for (let s = 1; s < steps; s++) {
@@ -268,18 +268,18 @@ function renderCharts(history) {
   if (!history || history.length === 0) return;
 
   const getUsed = (h) => h.usage?.data?.usage?.items?.[0]?.used || 0;
-  const gapThreshold = 60 * 1000;
+  const gapThreshold = 5 * 60 * 1000; // 5 minutes
 
-  // Filter to last 24 hours for trend chart, then downsample to max 288 points
+  // Filter to last 24 hours for trend chart, then downsample to max 576 points
   const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
   let recentHistory = history.filter(h => h.ts > oneDayAgo);
   if (recentHistory.length === 0) recentHistory = history.slice(-10);
 
-  // Downsample: keep at most 288 points evenly spaced (24h * 12 per hour)
-  if (recentHistory.length > 288) {
-    const step = recentHistory.length / 288;
+  // Downsample: keep at most 576 points evenly spaced (24h * 24 per hour = every 2.5 min)
+  if (recentHistory.length > 576) {
+    const step = recentHistory.length / 576;
     const sampled = [];
-    for (let i = 0; i < 288; i++) {
+    for (let i = 0; i < 576; i++) {
       sampled.push(recentHistory[Math.min(Math.floor(i * step), recentHistory.length - 1)]);
     }
     recentHistory = sampled;
@@ -317,7 +317,7 @@ function renderCharts(history) {
           borderColor: '#4361ee',
           backgroundColor: 'rgba(67,97,238,.08)',
           fill: true,
-          tension: 0.5,
+          tension: 0.6,
           borderWidth: 2.5,
           pointRadius: 0,
           pointHoverRadius: 5,

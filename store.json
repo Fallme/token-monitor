@@ -11449,6 +11449,606 @@
           }
         }
       }
+    },
+    {
+      "ts": 1778573028669,
+      "detail": {
+        "code": 0,
+        "message": "",
+        "data": {
+          "planCode": "max",
+          "planName": "Max",
+          "currentPeriodEnd": "2026-06-06 23:59:59",
+          "expired": false,
+          "enableAutoRenew": false,
+          "autoRenewDiscount": "0.77",
+          "hasAutoRenewSubscribed": false
+        }
+      },
+      "usage": {
+        "code": 0,
+        "message": "",
+        "data": {
+          "monthUsage": {
+            "percent": 0.3738,
+            "items": [
+              {
+                "name": "month_total_token",
+                "used": 598068135,
+                "limit": 1600000000,
+                "percent": 0.3738
+              }
+            ]
+          },
+          "usage": {
+            "percent": 0.37,
+            "items": [
+              {
+                "name": "plan_total_token",
+                "used": 598068135,
+                "limit": 1600000000,
+                "percent": 0.37
+              },
+              {
+                "name": "compensation_total_token",
+                "used": 0,
+                "limit": 0,
+                "percent": 0
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "ts": 1778573328680,
+      "detail": {
+        "code": 0,
+        "message": "",
+        "data": {
+          "planCode": "max",
+          "planName": "Max",
+          "currentPeriodEnd": "2026-06-06 23:59:59",
+          "expired": false,
+          "enableAutoRenew": false,
+          "autoRenewDiscount": "0.77",
+          "hasAutoRenewSubscribed": false
+        }
+      },
+      "usage": {
+        "code": 0,
+        "message": "",
+        "data": {
+          "monthUsage": {
+            "percent": 0.3755,
+            "items": [
+              {
+                "name": "month_total_token",
+                "used": 600853695,
+                "limit": 1600000000,
+                "percent": 0.3755
+              }
+            ]
+          },
+          "usage": {
+            "percent": 0.38,
+            "items": [
+              {
+                "name": "plan_total_token",
+                "used": 600853695,
+                "limit": 1600000000,
+                "percent": 0.38
+              },
+              {
+                "name": "compensation_total_token",
+                "used": 0,
+                "limit": 0,
+                "percent": 0
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "ts": 1778573628684,
+      "detail": {
+        "code": 0,
+        "message": "",
+        "data": {
+          "planCode": "max",
+          "planName": "Max",
+          "currentPeriodEnd": "2026-06-06 23:59:59",
+          "expired": false,
+          "enableAutoRenew": false,
+          "autoRenewDiscount": "0.77",
+          "hasAutoRenewSubscribed": false
+        }
+      },
+      "usage": {
+        "code": 0,
+        "message": "",
+        "data": {
+          "monthUsage": {
+            "percent": 0.3773,
+            "items": [
+              {
+                "name": "month_total_token",
+                "used": 603689423,
+                "limit": 1600000000,
+                "percent": 0.3773
+              }
+            ]
+          },
+          "usage": {
+            "percent": 0.38,
+            "items": [
+              {
+                "name": "plan_total_token",
+                "used": 603689423,
+                "limit": 1600000000,
+                "percent": 0.38
+              },
+              {
+                "name": "compensation_total_token",
+                "used": 0,
+                "limit": 0,
+                "percent": 0
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "ts": 1778573928691,
+      "detail": {
+        "code": 0,
+        "message": "",
+        "data": {
+          "planCode": "max",
+          "planName": "Max",
+          "currentPeriodEnd": "2026-06-06 23:59:59",
+          "expired": false,
+          "enableAutoRenew": false,
+          "autoRenewDiscount": "0.77",
+          "hasAutoRenewSubscribed": false
+        }
+      },
+      "usage": {
+        "code": 0,
+        "message": "",
+        "data": {
+          "monthUsage": {
+            "percent": 0.3796,
+            "items": [
+              {
+                "name": "month_total_token",
+                "used": 607412994,
+                "limit": 1600000000,
+                "percent": 0.3796
+              }
+            ]
+          },
+          "usage": {
+            "percent": 0.38,
+            "items": [
+              {
+                "name": "plan_total_token",
+                "used": 607412994,
+                "limit": 1600000000,
+                "percent": 0.38
+              },
+              {
+                "name": "compensation_total_token",
+                "used": 0,
+                "limit": 0,
+                "percent": 0
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "ts": 1778574228700,
+      "detail": {
+        "code": 0,
+        "message": "",
+        "data": {
+          "planCode": "max",
+          "planName": "Max",
+          "currentPeriodEnd": "2026-06-06 23:59:59",
+          "expired": false,
+          "enableAutoRenew": false,
+          "autoRenewDiscount": "0.77",
+          "hasAutoRenewSubscribed": false
+        }
+      },
+      "usage": {
+        "code": 0,
+        "message": "",
+        "data": {
+          "monthUsage": {
+            "percent": 0.3827,
+            "items": [
+              {
+                "name": "month_total_token",
+                "used": 612340892,
+                "limit": 1600000000,
+                "percent": 0.3827
+              }
+            ]
+          },
+          "usage": {
+            "percent": 0.38,
+            "items": [
+              {
+                "name": "plan_total_token",
+                "used": 612340892,
+                "limit": 1600000000,
+                "percent": 0.38
+              },
+              {
+                "name": "compensation_total_token",
+                "used": 0,
+                "limit": 0,
+                "percent": 0
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "ts": 1778574528714,
+      "detail": {
+        "code": 0,
+        "message": "",
+        "data": {
+          "planCode": "max",
+          "planName": "Max",
+          "currentPeriodEnd": "2026-06-06 23:59:59",
+          "expired": false,
+          "enableAutoRenew": false,
+          "autoRenewDiscount": "0.77",
+          "hasAutoRenewSubscribed": false
+        }
+      },
+      "usage": {
+        "code": 0,
+        "message": "",
+        "data": {
+          "monthUsage": {
+            "percent": 0.3853,
+            "items": [
+              {
+                "name": "month_total_token",
+                "used": 616552508,
+                "limit": 1600000000,
+                "percent": 0.3853
+              }
+            ]
+          },
+          "usage": {
+            "percent": 0.39,
+            "items": [
+              {
+                "name": "plan_total_token",
+                "used": 616552508,
+                "limit": 1600000000,
+                "percent": 0.39
+              },
+              {
+                "name": "compensation_total_token",
+                "used": 0,
+                "limit": 0,
+                "percent": 0
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "ts": 1778574828724,
+      "detail": {
+        "code": 0,
+        "message": "",
+        "data": {
+          "planCode": "max",
+          "planName": "Max",
+          "currentPeriodEnd": "2026-06-06 23:59:59",
+          "expired": false,
+          "enableAutoRenew": false,
+          "autoRenewDiscount": "0.77",
+          "hasAutoRenewSubscribed": false
+        }
+      },
+      "usage": {
+        "code": 0,
+        "message": "",
+        "data": {
+          "monthUsage": {
+            "percent": 0.3861,
+            "items": [
+              {
+                "name": "month_total_token",
+                "used": 617838050,
+                "limit": 1600000000,
+                "percent": 0.3861
+              }
+            ]
+          },
+          "usage": {
+            "percent": 0.39,
+            "items": [
+              {
+                "name": "plan_total_token",
+                "used": 617838050,
+                "limit": 1600000000,
+                "percent": 0.39
+              },
+              {
+                "name": "compensation_total_token",
+                "used": 0,
+                "limit": 0,
+                "percent": 0
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "ts": 1778575128732,
+      "detail": {
+        "code": 0,
+        "message": "",
+        "data": {
+          "planCode": "max",
+          "planName": "Max",
+          "currentPeriodEnd": "2026-06-06 23:59:59",
+          "expired": false,
+          "enableAutoRenew": false,
+          "autoRenewDiscount": "0.77",
+          "hasAutoRenewSubscribed": false
+        }
+      },
+      "usage": {
+        "code": 0,
+        "message": "",
+        "data": {
+          "monthUsage": {
+            "percent": 0.3864,
+            "items": [
+              {
+                "name": "month_total_token",
+                "used": 618283829,
+                "limit": 1600000000,
+                "percent": 0.3864
+              }
+            ]
+          },
+          "usage": {
+            "percent": 0.39,
+            "items": [
+              {
+                "name": "plan_total_token",
+                "used": 618283829,
+                "limit": 1600000000,
+                "percent": 0.39
+              },
+              {
+                "name": "compensation_total_token",
+                "used": 0,
+                "limit": 0,
+                "percent": 0
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "ts": 1778575428732,
+      "detail": {
+        "code": 0,
+        "message": "",
+        "data": {
+          "planCode": "max",
+          "planName": "Max",
+          "currentPeriodEnd": "2026-06-06 23:59:59",
+          "expired": false,
+          "enableAutoRenew": false,
+          "autoRenewDiscount": "0.77",
+          "hasAutoRenewSubscribed": false
+        }
+      },
+      "usage": {
+        "code": 0,
+        "message": "",
+        "data": {
+          "monthUsage": {
+            "percent": 0.3877,
+            "items": [
+              {
+                "name": "month_total_token",
+                "used": 620248263,
+                "limit": 1600000000,
+                "percent": 0.3877
+              }
+            ]
+          },
+          "usage": {
+            "percent": 0.39,
+            "items": [
+              {
+                "name": "plan_total_token",
+                "used": 620248263,
+                "limit": 1600000000,
+                "percent": 0.39
+              },
+              {
+                "name": "compensation_total_token",
+                "used": 0,
+                "limit": 0,
+                "percent": 0
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "ts": 1778575728740,
+      "detail": {
+        "code": 0,
+        "message": "",
+        "data": {
+          "planCode": "max",
+          "planName": "Max",
+          "currentPeriodEnd": "2026-06-06 23:59:59",
+          "expired": false,
+          "enableAutoRenew": false,
+          "autoRenewDiscount": "0.77",
+          "hasAutoRenewSubscribed": false
+        }
+      },
+      "usage": {
+        "code": 0,
+        "message": "",
+        "data": {
+          "monthUsage": {
+            "percent": 0.3881,
+            "items": [
+              {
+                "name": "month_total_token",
+                "used": 621023139,
+                "limit": 1600000000,
+                "percent": 0.3881
+              }
+            ]
+          },
+          "usage": {
+            "percent": 0.39,
+            "items": [
+              {
+                "name": "plan_total_token",
+                "used": 621023139,
+                "limit": 1600000000,
+                "percent": 0.39
+              },
+              {
+                "name": "compensation_total_token",
+                "used": 0,
+                "limit": 0,
+                "percent": 0
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "ts": 1778576028751,
+      "detail": {
+        "code": 0,
+        "message": "",
+        "data": {
+          "planCode": "max",
+          "planName": "Max",
+          "currentPeriodEnd": "2026-06-06 23:59:59",
+          "expired": false,
+          "enableAutoRenew": false,
+          "autoRenewDiscount": "0.77",
+          "hasAutoRenewSubscribed": false
+        }
+      },
+      "usage": {
+        "code": 0,
+        "message": "",
+        "data": {
+          "monthUsage": {
+            "percent": 0.3901,
+            "items": [
+              {
+                "name": "month_total_token",
+                "used": 624108973,
+                "limit": 1600000000,
+                "percent": 0.3901
+              }
+            ]
+          },
+          "usage": {
+            "percent": 0.39,
+            "items": [
+              {
+                "name": "plan_total_token",
+                "used": 624108973,
+                "limit": 1600000000,
+                "percent": 0.39
+              },
+              {
+                "name": "compensation_total_token",
+                "used": 0,
+                "limit": 0,
+                "percent": 0
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "ts": 1778576328759,
+      "detail": {
+        "code": 0,
+        "message": "",
+        "data": {
+          "planCode": "max",
+          "planName": "Max",
+          "currentPeriodEnd": "2026-06-06 23:59:59",
+          "expired": false,
+          "enableAutoRenew": false,
+          "autoRenewDiscount": "0.77",
+          "hasAutoRenewSubscribed": false
+        }
+      },
+      "usage": {
+        "code": 0,
+        "message": "",
+        "data": {
+          "monthUsage": {
+            "percent": 0.3918,
+            "items": [
+              {
+                "name": "month_total_token",
+                "used": 626936088,
+                "limit": 1600000000,
+                "percent": 0.3918
+              }
+            ]
+          },
+          "usage": {
+            "percent": 0.39,
+            "items": [
+              {
+                "name": "plan_total_token",
+                "used": 626936088,
+                "limit": 1600000000,
+                "percent": 0.39
+              },
+              {
+                "name": "compensation_total_token",
+                "used": 0,
+                "limit": 0,
+                "percent": 0
+              }
+            ]
+          }
+        }
+      }
     }
   ],
   "cookies": "api-platform_serviceToken=\"A/EKIm1WUwZbhPRjZZvdHrxLKiZWFiOjLkYAqDfO+zAcN1J0Hlj26ZSLj8UM7oeGNBe+HDzBZfhVsxAQZquPgpkG3jyUbb1+0x7rGH6x2MnNa+71GPbLGDQTxDURNAH/8jjJoF7H9zMN6eUzq7i74xYfPJdXeiC3rzo1+B9g42wKbaWxnZ43NvKPGQaORUu1odkiW+61OLiL3W37oSuzEtRJ1ySOBbVSZK5/ktM16cTJWjx+OAuJcdr+d5gGXi5gKlJoOyGVS+CBzrg9R3HQ94fTT070ef7qhvmaMJXXDOjQ/lFkuKnZobbD8MUkmsKHJhFaW1ext9jMpclSpWro8Pdbm7BUydKjQwB4l4Jv5q4=\";userId=1503396839;api-platform_slh=\"pIgd7xxzkcF3tGxbx1Cq+IwPEH0=\";api-platform_ph=\"POniwbqHyhAspPVqfLyWQw==\""
