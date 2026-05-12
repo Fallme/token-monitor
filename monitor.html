@@ -134,7 +134,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
       <canvas id="trendChart"></canvas>
     </div>
     <div class="chart-box">
-      <h3>每10分钟消耗量</h3>
+      <h3>每日消耗量</h3>
       <canvas id="dailyChart"></canvas>
     </div>
   </div>
@@ -330,34 +330,31 @@ function renderCharts(history) {
     });
   }
 
-  // --- Per-10-minute consumption chart (last 24h) ---
-  const cutoff24h = Date.now() - 24 * 60 * 60 * 1000;
-  const recentHistory = history.filter(h => h.ts > cutoff24h);
-  const intervalMap = {};
-  for (let i = 1; i < recentHistory.length; i++) {
-    const prevUsed = getUsed(recentHistory[i-1]);
-    const currUsed = getUsed(recentHistory[i]);
+  // --- Daily consumption chart ---
+  const dailyMap = {};
+  for (let i = 1; i < history.length; i++) {
+    const prevUsed = getUsed(history[i-1]);
+    const currUsed = getUsed(history[i]);
     const diff = Math.max(0, currUsed - prevUsed);
-    const d = new Date(recentHistory[i].ts);
-    const label = (d.getMonth()+1) + '/' + d.getDate() + ' ' + d.getHours() + ':' + String(d.getMinutes()).padStart(2,'0');
-    intervalMap[label] = (intervalMap[label] || 0) + diff;
+    const day = new Date(history[i].ts).toLocaleDateString('zh-CN');
+    dailyMap[day] = (dailyMap[day] || 0) + diff;
   }
 
-  const intervalLabels = Object.keys(intervalMap);
-  const intervalData = Object.values(intervalMap);
+  const dailyLabels = Object.keys(dailyMap);
+  const dailyData = Object.values(dailyMap);
 
   if (dailyChart) {
-    dailyChart.data.labels = intervalLabels;
-    dailyChart.data.datasets[0].data = intervalData;
+    dailyChart.data.labels = dailyLabels;
+    dailyChart.data.datasets[0].data = dailyData;
     dailyChart.update('none');
   } else {
     dailyChart = new Chart(document.getElementById('dailyChart'), {
       type: 'bar',
       data: {
-        labels: intervalLabels,
+        labels: dailyLabels,
         datasets: [{
-          label: '每10分钟消耗',
-          data: intervalData,
+          label: '每日消耗',
+          data: dailyData,
           backgroundColor: 'rgba(247,37,133,.7)',
           borderRadius: 4,
         }]
@@ -375,9 +372,8 @@ function renderCharts(history) {
   }
 
   // Estimate remaining days from average rate
-  if (intervalData.length > 0) {
-    const avgPerInterval = intervalData.reduce((a, b) => a + b, 0) / intervalData.length;
-    const avgDaily = avgPerInterval * 144; // 144 x 10min = 1 day
+  if (dailyData.length > 0) {
+    const avgDaily = dailyData.reduce((a, b) => a + b, 0) / dailyData.length;
     if (avgDaily > 0) {
       const lastUsed = getUsed(history[history.length-1]);
       const lastLimit = history[history.length-1].usage?.data?.usage?.items?.[0]?.limit || 1600000000;
