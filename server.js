@@ -102,8 +102,14 @@ function mimoFetch(apiPath) {
 
 // --- Poll and store ---
 let latestData = null;
+let lastPollTime = 0;
 
 async function pollUsage() {
+  // Prevent duplicate polls within 60 seconds
+  const now = Date.now();
+  if (now - lastPollTime < 60 * 1000) return;
+  lastPollTime = now;
+
   try {
     const [detail, usage] = await Promise.all([
       mimoFetch("/api/v1/tokenPlan/detail"),
@@ -112,11 +118,10 @@ async function pollUsage() {
 
     if (detail.status === 401 || usage.status === 401) {
       console.error("[poll] Cookie expired or invalid (401)");
-      latestData = { error: "cookie_expired", ts: Date.now() };
+      latestData = { error: "cookie_expired", ts: now };
       return;
     }
 
-    const now = Date.now();
     const record = {
       ts: now,
       detail: detail.body,
