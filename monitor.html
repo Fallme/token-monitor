@@ -125,16 +125,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
   <div class="charts">
     <div class="chart-box">
       <div class="chart-header">
-        <h3>用量趋势</h3>
+        <h3>10分钟用量走势</h3>
         <div class="toggle-group">
           <button class="toggle-btn active" onclick="setTrendMode('total')" id="trendBtnTotal">总量</button>
-          <button class="toggle-btn" onclick="setTrendMode('rate')" id="trendBtnRate">每分钟</button>
+          <button class="toggle-btn" onclick="setTrendMode('rate')" id="trendBtnRate">每10分钟</button>
         </div>
       </div>
       <canvas id="trendChart"></canvas>
     </div>
     <div class="chart-box">
-      <h3>每日消耗量</h3>
+      <h3>每10分钟消耗量</h3>
       <canvas id="dailyChart"></canvas>
     </div>
   </div>
@@ -330,27 +330,19 @@ function renderCharts(history) {
     });
   }
 
-  // --- Daily chart: update in place ---
-  const dailyMap = {};
+  // --- Per-10-minute consumption chart ---
+  const intervalMap = {};
   for (let i = 1; i < history.length; i++) {
     const prevUsed = getUsed(history[i-1]);
     const currUsed = getUsed(history[i]);
     const diff = Math.max(0, currUsed - prevUsed);
-    const gap = history[i].ts - history[i-1].ts;
-    const dayMs = 24 * 60 * 60 * 1000;
-    if (gap > gapThreshold && diff > 0) {
-      const days = Math.max(1, Math.round(gap / dayMs));
-      const perDay = diff / days;
-      const start = new Date(history[i-1].ts);
-      for (let d = 0; d < days; d++) {
-        const day = new Date(start.getTime() + d * dayMs).toLocaleDateString('zh-CN');
-        dailyMap[day] = (dailyMap[day] || 0) + perDay;
-      }
-    } else {
-      const day = new Date(history[i].ts).toLocaleDateString('zh-CN');
-      dailyMap[day] = (dailyMap[day] || 0) + diff;
-    }
+    const d = new Date(history[i].ts);
+    const label = (d.getMonth()+1) + '/' + d.getDate() + ' ' + d.getHours() + ':' + String(d.getMinutes()).padStart(2,'0');
+    intervalMap[label] = (intervalMap[label] || 0) + diff;
   }
+
+  const dailyLabels = Object.keys(intervalMap);
+  const dailyData = Object.values(intervalMap);
 
   const dailyLabels = Object.keys(dailyMap);
   const dailyData = Object.values(dailyMap);
@@ -365,7 +357,7 @@ function renderCharts(history) {
       data: {
         labels: dailyLabels,
         datasets: [{
-          label: '每日消耗',
+          label: '每10分钟消耗',
           data: dailyData,
           backgroundColor: 'rgba(247,37,133,.7)',
           borderRadius: 4,
@@ -383,9 +375,10 @@ function renderCharts(history) {
     });
   }
 
-  // Estimate remaining days from daily rate
+  // Estimate remaining days from average rate
   if (dailyData.length > 0) {
-    const avgDaily = dailyData.reduce((a, b) => a + b, 0) / dailyData.length;
+    const avgPerInterval = dailyData.reduce((a, b) => a + b, 0) / dailyData.length;
+    const avgDaily = avgPerInterval * 144; // 144 x 10min = 1 day
     if (avgDaily > 0) {
       const lastUsed = getUsed(history[history.length-1]);
       const lastLimit = history[history.length-1].usage?.data?.usage?.items?.[0]?.limit || 1600000000;
