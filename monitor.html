@@ -269,7 +269,11 @@ function renderCharts(history) {
 
   const getUsed = (h) => h.usage?.data?.usage?.items?.[0]?.used || 0;
   const gapThreshold = 60 * 1000;
-  const trend = smoothHistory(history, getUsed, gapThreshold);
+
+  // Filter to last 24 hours for trend chart
+  const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
+  const recentHistory = history.filter(h => h.ts > oneDayAgo);
+  const trend = smoothHistory(recentHistory.length > 0 ? recentHistory : history.slice(-10), getUsed, gapThreshold);
 
   // Compute incremental usage between consecutive points
   const rateData = [];
