@@ -226,18 +226,26 @@ function renderDetail(d) {
 }
 
 // Smooth data across time gaps caused by service downtime
+// Returns multiple segments to break lines at large gaps
 function smoothHistory(history, getUsed, gapThresholdMs) {
-  if (history.length < 2) return { labels: [], data: [] };
+  if (history.length < 2) return { labels: [], data: [], breaks: [] };
   const labels = [];
   const data = [];
+  const breaks = []; // indices where line should break
+  const maxGap = 15 * 60 * 1000; // 15 min - break line if gap larger
+
   for (let i = 0; i < history.length; i++) {
     const d = new Date(history[i].ts);
     labels.push(d.getMonth()+1 + '/' + d.getDate() + ' ' + d.getHours() + ':' + String(d.getMinutes()).padStart(2,'0'));
     data.push(Math.round(getUsed(history[i])));
     if (i < history.length - 1) {
       const gap = history[i+1].ts - history[i].ts;
-      if (gap > gapThresholdMs) {
-        const steps = Math.min(Math.ceil(gap / gapThresholdMs), 50);
+      if (gap > maxGap) {
+        // Mark break point - don't interpolate across large gaps
+        breaks.push(data.length);
+      } else if (gap > gapThresholdMs) {
+        // Small gap - interpolate
+        const steps = Math.min(Math.ceil(gap / gapThresholdMs), 10);
         const v0 = data[data.length - 1];
         const v1 = Math.round(getUsed(history[i+1]));
         for (let s = 1; s < steps; s++) {
@@ -250,7 +258,7 @@ function smoothHistory(history, getUsed, gapThresholdMs) {
       }
     }
   }
-  return { labels, data };
+  return { labels, data, breaks };
 }
 
 // Downsample: pick one point per minute (last value in each minute bucket)
@@ -287,6 +295,18 @@ function renderCharts(history) {
 
   const trend = smoothHistory(recentHistory, getUsed, gapThreshold);
 
+  // Insert nulls at break points to disconnect lines at large gaps
+  function insertBreaks(arr, breaks) {
+    const result = [...arr];
+    // Insert from end to keep indices stable
+    for (let i = breaks.length - 1; i >= 0; i--) {
+      result.splice(breaks[i], 0, null);
+    }
+    return result;
+  }
+
+  const totalWithBreaks = insertBreaks(trend.data, trend.breaks);
+
   // Compute incremental usage between consecutive points
   const rateData = [];
   for (let i = 0; i < trend.data.length; i++) {
@@ -294,11 +314,12 @@ function renderCharts(history) {
     const diff = Math.max(0, Math.round(trend.data[i] - trend.data[i - 1]));
     rateData.push(diff);
   }
+  const rateWithBreaks = insertBreaks(rateData, trend.breaks);
 
-  lastTrendData = { labels: trend.labels, total: trend.data, rate: rateData };
+  lastTrendData = { labels: trend.labels, total: totalWithBreaks, rate: rateWithBreaks, breaks: trend.breaks };
 
-  const activeData = trendMode === 'total' ? trend.data : rateData;
-  const activeLabel = trendMode === 'total' ? '累计使用 Credits' : '每分钟消耗';
+  const activeData = trendMode === 'total' ? totalWithBreaks : rateWithBreaks;
+  const activeLabel = trendMode === 'total' ? '累计使用 Credits' : '每段消耗';
 
   // --- Trend chart: update in place ---
   if (trendChart) {
@@ -406,7 +427,7 @@ function setTrendMode(mode) {
   document.getElementById('trendBtnRate').classList.toggle('active', mode === 'rate');
   if (trendChart && lastTrendData) {
     trendChart.data.datasets[0].data = mode === 'total' ? lastTrendData.total : lastTrendData.rate;
-    trendChart.data.datasets[0].label = mode === 'total' ? '累计使用 Credits' : '每分钟消耗';
+    trendChart.data.datasets[0].label = mode === 'total' ? '累计使用 Credits' : '每段消耗';
     trendChart.update('none');
   }
 }
