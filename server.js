@@ -7,7 +7,7 @@ const { exec } = require("child_process");
 
 const PORT = Number(process.env.PORT || 3001);
 const MIMO_BASE = "https://platform.xiaomimimo.com";
-const POLL_INTERVAL = 5 * 1000; // 5 seconds
+const POLL_INTERVAL = 10 * 60 * 1000; // 10 minutes
 const STORE_PATH = path.join(__dirname, "store.json");
 
 // --- Cookie management ---

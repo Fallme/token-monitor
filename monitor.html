@@ -146,7 +146,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
     <button onclick="saveCookies()">保存 Cookie</button>
   </div>
 </div>
-<div class="footer">MiMo Token Monitor v1.0 | 每 5 秒自动刷新</div>
+<div class="footer">MiMo Token Monitor v1.0 | 每 10 分钟自动刷新</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -441,7 +441,7 @@ async function saveCookies() {
 // Initial load + auto refresh
 fetchUsage();
 fetchHistory();
-setInterval(() => { fetchUsage(); fetchHistory(); }, 5000);
+setInterval(() => { fetchUsage(); fetchHistory(); }, 10 * 60 * 1000);
 
 function showToast(msg) {
   const t = document.getElementById('toast');
