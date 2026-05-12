@@ -330,13 +330,15 @@ function renderCharts(history) {
     });
   }
 
-  // --- Per-10-minute consumption chart ---
+  // --- Per-10-minute consumption chart (last 24h) ---
+  const cutoff24h = Date.now() - 24 * 60 * 60 * 1000;
+  const recentHistory = history.filter(h => h.ts > cutoff24h);
   const intervalMap = {};
-  for (let i = 1; i < history.length; i++) {
-    const prevUsed = getUsed(history[i-1]);
-    const currUsed = getUsed(history[i]);
+  for (let i = 1; i < recentHistory.length; i++) {
+    const prevUsed = getUsed(recentHistory[i-1]);
+    const currUsed = getUsed(recentHistory[i]);
     const diff = Math.max(0, currUsed - prevUsed);
-    const d = new Date(history[i].ts);
+    const d = new Date(recentHistory[i].ts);
     const label = (d.getMonth()+1) + '/' + d.getDate() + ' ' + d.getHours() + ':' + String(d.getMinutes()).padStart(2,'0');
     intervalMap[label] = (intervalMap[label] || 0) + diff;
   }
