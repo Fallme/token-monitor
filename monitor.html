@@ -275,11 +275,11 @@ function renderCharts(history) {
   let recentHistory = history.filter(h => h.ts > oneDayAgo);
   if (recentHistory.length === 0) recentHistory = history.slice(-10);
 
-  // Downsample: keep at most 60 points evenly spaced
-  if (recentHistory.length > 60) {
-    const step = recentHistory.length / 60;
+  // Downsample: keep at most 288 points evenly spaced (24h * 12 per hour)
+  if (recentHistory.length > 288) {
+    const step = recentHistory.length / 288;
     const sampled = [];
-    for (let i = 0; i < 60; i++) {
+    for (let i = 0; i < 288; i++) {
       sampled.push(recentHistory[Math.min(Math.floor(i * step), recentHistory.length - 1)]);
     }
     recentHistory = sampled;
@@ -291,7 +291,7 @@ function renderCharts(history) {
   const rateData = [];
   for (let i = 0; i < trend.data.length; i++) {
     if (i === 0) { rateData.push(0); continue; }
-    const diff = Math.max(0, trend.data[i] - trend.data[i - 1]);
+    const diff = Math.max(0, Math.round(trend.data[i] - trend.data[i - 1]));
     rateData.push(diff);
   }
 
@@ -317,7 +317,7 @@ function renderCharts(history) {
           borderColor: '#4361ee',
           backgroundColor: 'rgba(67,97,238,.08)',
           fill: true,
-          tension: 0.4,
+          tension: 0.5,
           borderWidth: 2.5,
           pointRadius: 0,
           pointHoverRadius: 5,
