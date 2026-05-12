@@ -7,17 +7,24 @@ const { exec } = require("child_process");
 
 const PORT = Number(process.env.PORT || 3001);
 const MIMO_BASE = "https://platform.xiaomimimo.com";
-const POLL_INTERVAL = 10 * 60 * 1000; // 10 minutes
+const POLL_INTERVAL = 5 * 60 * 1000; // 5 minutes
 const STORE_PATH = path.join(__dirname, "store.json");
 
 // --- Cookie management ---
+const COOKIES_JSON_PATH = path.join(__dirname, "cookies.json");
+
 function loadCookies() {
-  // 1. store.json
+  // 1. cookies.json (git managed, auto-updated)
+  try {
+    const data = JSON.parse(fs.readFileSync(COOKIES_JSON_PATH, "utf-8"));
+    if (data.cookies) return data.cookies;
+  } catch {}
+  // 2. store.json (web UI manual set)
   try {
     const store = JSON.parse(fs.readFileSync(STORE_PATH, "utf-8"));
     if (store.cookies) return store.cookies;
   } catch {}
-  // 2. Environment variable (set in Render dashboard)
+  // 3. Environment variable (Render fallback)
   if (process.env.MIMO_CONSOLE_COOKIES) return process.env.MIMO_CONSOLE_COOKIES;
   return "";
 }
