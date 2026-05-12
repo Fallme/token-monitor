@@ -270,10 +270,22 @@ function renderCharts(history) {
   const getUsed = (h) => h.usage?.data?.usage?.items?.[0]?.used || 0;
   const gapThreshold = 60 * 1000;
 
-  // Filter to last 24 hours for trend chart
+  // Filter to last 24 hours for trend chart, then downsample to max 30 points
   const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
-  const recentHistory = history.filter(h => h.ts > oneDayAgo);
-  const trend = smoothHistory(recentHistory.length > 0 ? recentHistory : history.slice(-10), getUsed, gapThreshold);
+  let recentHistory = history.filter(h => h.ts > oneDayAgo);
+  if (recentHistory.length === 0) recentHistory = history.slice(-10);
+
+  // Downsample: keep at most 30 points evenly spaced
+  if (recentHistory.length > 30) {
+    const step = recentHistory.length / 30;
+    const sampled = [];
+    for (let i = 0; i < 30; i++) {
+      sampled.push(recentHistory[Math.min(Math.floor(i * step), recentHistory.length - 1)]);
+    }
+    recentHistory = sampled;
+  }
+
+  const trend = smoothHistory(recentHistory, getUsed, gapThreshold);
 
   // Compute incremental usage between consecutive points
   const rateData = [];
